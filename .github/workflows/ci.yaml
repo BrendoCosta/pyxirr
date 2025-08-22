@@ -40,7 +40,7 @@ jobs:
         with:
           maturin-version: ${{ env.MATURIN_VERSION }}
           manylinux: auto
-          args: --release --strip --sdist --interpreter 3.7 3.8 3.9 3.10 3.11 3.12 3.13
+          args: --release --strip --sdist
       - name: Check that the source distribution installed correctly
         run: python3 -m pip install --user target/wheels/pyxirr-*.tar.gz
       - name: Upload wheels
@@ -63,7 +63,7 @@ jobs:
           maturin-version: ${{ env.MATURIN_VERSION }}
           target: ${{ matrix.target }}
           manylinux: auto
-          args: --release --strip --interpreter 3.7 3.8 3.9 3.10 3.11 3.12 3.13
+          args: --release --strip
       - uses: actions/upload-artifact@v4
         with:
           name: wheels-linux-cross-${{ matrix.target }}
@@ -87,7 +87,7 @@ jobs:
           maturin-version: ${{ env.MATURIN_VERSION }}
           target: ${{ matrix.target }}
           manylinux: musllinux_1_2
-          args: --release --strip -i 3.7 3.8 3.9 3.10 3.11 3.12 3.13
+          args: --release --strip
       - uses: actions/upload-artifact@v4
         with:
           name: wheels-linux-musl-${{ matrix.target }}
@@ -96,24 +96,20 @@ jobs:
   windows:
     if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
     needs: test
-    strategy:
-      fail-fast: false
-      matrix:
-        python: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python }}
+          python-version: '3.11'
           # allow-prereleases: true
       - uses: PyO3/maturin-action@v1
         with:
           maturin-version: ${{ env.MATURIN_VERSION }}
-          args: --release --strip --interpreter python${{ matrix.python }}
+          args: --release --strip
       - uses: actions/upload-artifact@v4
         with:
-          name: wheels-windows-${{ matrix.python }}
+          name: wheels-windows
           path: target/wheels
 
   macos:
@@ -134,7 +130,7 @@ jobs:
         with:
           maturin-version: ${{ env.MATURIN_VERSION }}
           target: ${{ matrix.platform.target }}
-          args: --release --strip --interpreter 3.7 3.8 3.9 3.10 3.11 3.12 3.13
+          args: --release --strip
       - uses: actions/upload-artifact@v4
         with:
           name: wheels-macos-${{ matrix.platform.target }}
